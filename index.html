@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Hazel AI — Advanced AI Assistant powered by Claude"/>
+  <meta name="theme-color" content="#080a0f"/>
+
+  <title>Hazel AI</title>
+
+  <!-- Favicon inline SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><rect width='40' height='40' rx='10' fill='%23080a0f'/><text x='20' y='28' text-anchor='middle' font-family='Georgia' font-size='22' font-weight='900' fill='%2300d9ff'>H</text></svg>"/>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css"/>
+
+  <!--
+  ┌─────────────────────────────────────────────────────────┐
+  │  ★  STEP 1: Open  config.js  and paste your API key     │
+  │     That is the ONLY file you need to touch.            │
+  └─────────────────────────────────────────────────────────┘
+  -->
+  <script src="config.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  APP SHELL                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- Aurora background blobs -->
+  <div class="aurora" aria-hidden="true">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside id="sidebar" role="navigation" aria-label="Chat history">
+    <div class="sidebar-inner">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <div id="sidebar-logo-slot" class="logo-svg"></div>
+        <div class="logo-text">
+          <div class="logo-name">Hazel AI</div>
+          <div class="logo-sub">Advanced Intelligence</div>
+        </div>
+        <div class="online-dot" title="Online"></div>
+      </div>
+
+      <!-- New chat -->
+      <button id="new-chat-btn" class="new-chat-btn" aria-label="Start new conversation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Conversation
+      </button>
+
+      <!-- Search -->
+      <div class="sidebar-search">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input id="search-input" type="text" placeholder="Search conversations…" aria-label="Search chats"/>
+        </div>
+      </div>
+
+      <!-- Session list -->
+      <div id="session-list" role="list" aria-label="Chat sessions"></div>
+
+      <!-- Footer nav -->
+      <div class="sidebar-footer">
+        <button id="footer-settings" class="footer-btn" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+        <button id="footer-shortcuts" class="footer-btn" title="Keyboard shortcuts">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+          Shortcuts
+        </button>
+        <button id="footer-export" class="footer-btn" title="Export current chat">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+      </div>
+
+    </div>
+  </aside><!-- /sidebar -->
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main id="main" role="main">
+
+    <!-- Top bar -->
+    <header id="topbar">
+      <button id="menu-btn" class="menu-btn" aria-label="Toggle sidebar" title="Toggle sidebar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <h1 id="chat-title">New Chat</h1>
+
+      <div id="persona-badge" class="persona-badge">✦ Hazel</div>
+
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        Online
+      </div>
+
+      <button id="settings-btn" class="icon-btn" title="Settings" style="border:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+
+      <button id="shortcuts-btn" class="icon-btn" title="Keyboard shortcuts" style="border:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10"/><line x1="10" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="14" y2="10"/><line x1="18" y1="10" x2="18" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+      </button>
+
+      <button id="export-btn" class="icon-btn" title="Export chat (Ctrl+E)" style="border:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+    </header>
+
+    <!-- Messages -->
+    <section id="messages" aria-live="polite" aria-label="Chat messages"></section>
+
+    <!-- Typing indicator (hidden by default) -->
+    <div id="typing-indicator" style="display:none" aria-label="Hazel is typing">
+      <div class="msg-avatar assistant" id="typing-avatar">✦</div>
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <footer id="input-area">
+      <div id="suggestions-row" aria-label="Quick suggestions"></div>
+
+      <div class="input-box">
+        <textarea
+          id="user-input"
+          placeholder="Message Hazel…"
+          rows="1"
+          aria-label="Message input"
+          aria-multiline="true"
+          autocomplete="off"
+          spellcheck="true"
+        ></textarea>
+
+        <div class="input-controls">
+          <span id="char-count" class="char-count"></span>
+
+          <button id="voice-btn" class="icon-btn" title="Voice input" aria-label="Voice input">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </button>
+
+          <button id="send-btn" class="send-btn" title="Send (Enter)" aria-label="Send message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="input-hint">
+        <span>⏎ Send · ⇧⏎ New line · 🎙 Voice · Ctrl+N New chat</span>
+        <span id="model-hint">claude-opus-4-5 · Hazel</span>
+      </div>
+    </footer>
+
+  </main><!-- /main -->
+
+</div><!-- /app -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  TOAST NOTIFICATION                                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MODAL: SETTINGS                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="modal-settings" class="modal-overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="settings-heading">⚙️ Settings</span>
+      <button class="modal-close" onclick="closeModal('settings')" aria-label="Close settings">×</button>
+    </div>
+
+    <!-- Persona -->
+    <div class="modal-section">
+      <div class="modal-label">AI Persona</div>
+      <div class="persona-grid"></div>
+    </div>
+
+    <!-- Temperature -->
+    <div class="modal-section">
+      <div class="modal-label">Temperature — <span id="temp-val">0.7</span></div>
+      <input id="temp-slider" type="range" min="0" max="10" value="7" aria-label="Temperature"/>
+      <div class="slider-row"><span>🎯 Precise</span><span>🎲 Creative</span></div>
+    </div>
+
+    <!-- Theme -->
+    <div class="modal-section">
+      <div class="modal-label">Theme</div>
+      <div class="theme-grid">
+        <button class="theme-btn" data-theme="dark"     onclick="setTheme('dark')">🌑 Dark</button>
+        <button class="theme-btn" data-theme="light"    onclick="setTheme('light')">☀️ Light</button>
+        <button class="theme-btn" data-theme="midnight" onclick="setTheme('midnight')">🌌 Midnight</button>
+      </div>
+    </div>
+
+    <button class="modal-btn" onclick="closeModal('settings')">Save &amp; Close</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MODAL: KEYBOARD SHORTCUTS                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="modal-shortcuts" class="modal-overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="shortcuts-heading">
+  <div class="modal" style="width:380px">
+    <div class="modal-title">
+      <span id="shortcuts-heading">⌨️ Keyboard Shortcuts</span>
+      <button class="modal-close" onclick="closeModal('shortcuts')" aria-label="Close shortcuts">×</button>
+    </div>
+    <div id="shortcuts-list"></div>
+    <button class="modal-btn" onclick="closeModal('shortcuts')">Close</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  APP SCRIPT                                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script src="js/app.js"></script>
+
+</body>
+</html>
